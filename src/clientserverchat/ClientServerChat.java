@@ -92,27 +92,54 @@ public class ClientServerChat {
                 
                 /*Conversation started*/
                 String readLine;
-                while(true) {
-                    
+                while(true) {         
                     readLine = inFromClient.readLine();
                     if(readLine.startsWith("quit")) {
                         break;
                     }
                     
                     // If msg is private send it to this client
-                    
-                    
+                    if(readLine.startsWith("@")) {        
+                        String[] message = readLine.split("\\s", 2);
+                        if(message.length > 1) {                       
+                            synchronized (this) {    
+                                for(int i=0; i<maxNumOfClients; i++) {  
+                                    if(threads[i] != null && threads[i] != this && threads[i].cName != null && threads[i].cName.equals(message[0])) {                                     
+                                       outToClient.writeBytes("<" + username + "> " + message[1]);
+                                    }         
+                                }                           
+                            }
+                                outToClient.writeBytes("<" + username + "> " + message[1]);  
+                        }
+                    } else {
+                        
+                        synchronized (this) {    
+                                for(int i=0; i<maxNumOfClients; i++) {  
+                                    if(threads[i] != null && threads[i].cName != null) {
+                                        outToClient.writeBytes("<" + username + "> " + readLine);
+                                    }
+                                }
+                        }
+                        
+                    }
                 }
                 
-     
+                synchronized (this) {
+                    for (int i = 0; i < maxNumOfClients; i++) {
+                        if (threads[i] == this) {
+                            threads[i] = null;
+                        }
+                    }
+                 }
+                
+                outToClient.close();
+                inFromClient.close();
+                clientSocket.close();
+            
             } catch (IOException ex) {
                 Logger.getLogger(ClientServerChat.class.getName()).log(Level.SEVERE, null, ex);
             }
-          
-        
-        
-            
-            
+  
         }
         
     }
