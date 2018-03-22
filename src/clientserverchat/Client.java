@@ -10,7 +10,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,21 +46,20 @@ public class Client implements Runnable {
 
     public static void main(String argv[]) throws IOException {
         
-        int portNumber = 6789;
+        int portNumber = 9999;
         String hostname = "localhost";
         String username = "Anonymous";
-	Scanner scan = new Scanner(System.in);
-		
-	System.out.println("Enter the username: ");
-	username = scan.nextLine();
-  
-        Client client = new Client(hostname, portNumber, username);
-        
-        clientSocket = new Socket("localhost", 6789); 
+
+        Client client = new Client(hostname, portNumber, username);        
+        clientSocket = new Socket("localhost", 9999); 
+        System.out.println("Client connected\n");
         
         inFromUser = new BufferedReader(new InputStreamReader(System.in)); //read from keyboard
         outToServer = new DataOutputStream(clientSocket.getOutputStream());  // send to server
         inFromServer =  new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        	
+	System.out.println("Enter the username: ");
+        username = inFromUser.readLine();
         
         if(clientSocket != null && inFromServer != null && outToServer != null) {
             
@@ -73,12 +71,12 @@ public class Client implements Runnable {
               break;
             }
             
-            clientSocket.close();
-            inFromUser.close();
-            outToServer.close();
+//            clientSocket.close();
+//            inFromUser.close();
+//            outToServer.close();
         }
         
-        scan.close();
+       // scan.close();
          
     }
 

@@ -26,7 +26,7 @@ public class ClientServerChat {
     private static BufferedReader inFromClient;
     private static int portNumber;
     
-    private static int maxNumOfClients;
+    private static int maxNumOfClients = 6;
     private static final clientsThread[] cThreads = new clientsThread[maxNumOfClients]; 
     /**
      * @param args the command line arguments
@@ -35,11 +35,45 @@ public class ClientServerChat {
     public static void main(String[] args) throws IOException {
         // TODO code application logic here
         
-        int portNumber = 6789;
+        int portNumber = 9999;
         
         sc = new ServerSocket(portNumber); 
-        conSocket = sc.accept();  
         
+        System.out.println("Server is running on port " + portNumber + "\n");
+        
+        while(true) {
+            
+         try {
+               conSocket = sc.accept();  
+           System.out.println("Client entered on port " + portNumber + "\n");
+
+           int i;
+            for (i = 0; i < maxNumOfClients; i++) {
+                
+
+                if (cThreads[i] == null) {
+                   (cThreads[i] = new clientsThread(conSocket, cThreads)).start();
+                System.out.println("value of i = " + i);
+
+                    //break;
+                }
+            }
+            
+          //  System.out.println("value of i = " + i);
+            
+            if (i == maxNumOfClients) {
+            outToClient = new DataOutputStream(conSocket.getOutputStream());
+            outToClient.writeBytes("Server too busy. Try later.\n");
+            outToClient.close();
+           // conSocket.close();
+            break;
+            }
+          } catch(IOException e) {
+              System.out.println(e.getMessage());
+          }
+                   
+        }
+    
     }
 
     private static class clientsThread extends Thread {
