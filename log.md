@@ -11,3 +11,7 @@
 - I enabled sending private and public messages between clients.
 - I started implementing the Server class.
 
+# Day 4:
+- I tried to test the app on a terminal.
+- I tried to fix some bugs.
+
